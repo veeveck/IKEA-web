@@ -1,11 +1,20 @@
 import Image from 'next/image';
 import {MenuIcon, SearchIcon,ShoppingBagIcon, ShoppingCartIcon,LocationMarkerIcon,TruckIcon,} from '@heroicons/react/outline'
+
+import {signIn, signOut,useSession} from 'next-auth/client';
+import { useRouter } from 'next/router'
+import { useSelector } from 'react-redux';
+import { selectItems } from '../slices/basketSlice';
+
 const Header = () => {
+    const [session]=useSession();
+    const router=useRouter();
+    const items=useSelector(selectItems);
     return (
         <header>
             <div className='flex items-center bg-ikea_blue p-1 flex-grow py-2'>
             <div className='mt-2 flexitems-center flex-grow sm:flex-grow-0'>
-                <Image src='https://logos-world.net/wp-content/uploads/2020/09/IKEA-Emblem.jpg'
+                <Image onClick={()=>router.push('/')}src='https://logos-world.net/wp-content/uploads/2020/09/IKEA-Emblem.jpg'
                 width={150} height={50} objectFit='contain' className='cursor-pointer'/>
             </div> 
 
@@ -14,8 +23,8 @@ const Header = () => {
                 <SearchIcon className='h-12 p-4'/>
             </div>  
             <div className='text-white flex items-center space-x-6 mx-6 whitespace-nowrap'>
-                <div className='link'>
-                    <p>Hello Vivek</p>
+                <div onClick={!session ? signIn :signOut} className=' cursor-pointer link'>
+                    <p className='hover:underline'>{session ? `Hello,${session.user.name}`: 'Sign In'}</p>
                     <p className='font-extrabold md:text-sm'>Accounts</p>
                 </div>
                 <div className='link'>
@@ -24,8 +33,8 @@ const Header = () => {
                 </div>
                 <div className='relative link flex items-center space-x-2'>
 
-                    <ShoppingCartIcon className='h-10'/>
-                    <span className='absolute top-0 left-5 h-4 w-4 bg-blue-500 text-center rounded-full text-white font-bold'>1</span>
+                    <ShoppingCartIcon className='h-10' onClick={()=>router.push('/checkout')}/>
+                    <span className='absolute top-0 left-5 h-4 w-4 bg-blue-500 text-center rounded-full text-white font-bold'>{items.length}</span>
                     <LocationMarkerIcon className='hidden md:inline h-10'/>
                     <TruckIcon className=' hidden md:inline h-10'/>
                     <ShoppingBagIcon className='h-10'/>
